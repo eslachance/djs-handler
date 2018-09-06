@@ -1,6 +1,8 @@
 const Discord = require("discord.js");
 const Enmap = require("enmap");
 const fs = require("fs");
+const { resolve } = require("path");
+const walk = require('walk');
 
 const client = new Discord.Client();
 const config = require("./config.json");
@@ -17,16 +19,20 @@ fs.readdir("./events/", (err, files) => {
 });
 
 client.commands = new Enmap();
+client.categories = new Enmap();
 
-fs.readdir("./commands/", (err, files) => {
-  if (err) return console.error(err);
-  files.forEach(file => {
-    if (!file.endsWith(".js")) return;
-    let props = require(`./commands/${file}`);
-    let commandName = file.split(".")[0];
-    console.log(`Attempting to load command ${commandName}`);
-    client.commands.set(commandName, props);
-  });
+const walker = walk.walk("./commands");
+
+walker.on("file", function (root, stats, next) {
+  if (!stats.name.endsWith(".js")) return;
+  const category = resolve(root).split("\\").slice(-1)[0];
+  client.categories.ensure(category, []);
+  let props = require(`${resolve(root)}/${stats.name}`);
+  let commandName = stats.name.split(".")[0];
+  console.log(`Attempting to load command ${commandName}`);
+  client.commands.set(commandName, props);
+  client.categories.push(category, commandName);
+  next();
 });
 
 client.login(config.token);

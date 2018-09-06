@@ -5,7 +5,8 @@
   "main": "app.js",
   "dependencies": {
     "discord.js": "^11.4.2",
-    "enmap": "^4.0.12"
+    "enmap": "^4.0.12",
+    "walk": "^2.3.14"
   },
   "devDependencies": {},
   "scripts": {
