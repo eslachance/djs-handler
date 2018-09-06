@@ -1,3 +1,6 @@
+# Repository Overrides
+config.json
+
 # Logs
 logs
 *.log
